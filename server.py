@@ -3,7 +3,7 @@ import json
 import model
 from config import config
 import sys
-from celltone.celltone import Celltone
+from celltone.main import Celltone
 import uuid
 import subprocess
 import os
