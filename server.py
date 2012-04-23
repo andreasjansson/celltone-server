@@ -15,17 +15,21 @@ urls = (
     '(.+)', 'Program',
     )
 
+def default_headers():
+    web.header('Access-Control-Allow-Origin',  '*')
+    web.header('Content-Type', 'application/json')
+
 class Index(object):
     def GET(self):
-        web.header('Content-Type', 'application/json')
+        default_headers()
         programs = model.get_programs()
         objects = [p.small() for p in programs]
         return json.dumps(objects)
 
 class Program(object):
     def GET(self, id):
+        default_headers()
         id = id[1:]
-        web.header('Content-Type', 'application/json')
         program = model.get_program(id)
         if not program:
             raise web.notfound()
@@ -33,7 +37,7 @@ class Program(object):
 
 class New(object):
     def POST(self):
-        web.header('Content-Type', 'application/json')
+        default_headers()
         post = web.input()
         if 'code' not in post:
             raise web.BadRequest()
