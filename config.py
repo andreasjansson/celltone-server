@@ -1,6 +1,6 @@
 config = {
-    'web_url': 'demo.celltone-lang.com',
-    'server_url': 'server.celltone-lang.com',
+    'web_url': 'http://demo.celltone-lang.com',
+    'server_url': 'http://server.celltone-lang.com',
     'tmp_dir': '/tmp',
     'static_dir': '/var/www/static',
 

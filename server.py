@@ -2,7 +2,6 @@ import web
 import json
 import model
 from config import config
-from pprint import pprint
 import sys
 from celltone.celltone import Celltone
 import uuid
@@ -40,6 +39,8 @@ class New(object):
             raise web.BadRequest()
         code = post['code']
         length = post['length'] if 'length' in post else 60
+        if length > 60:
+            length = 60
         id = post['id'] if 'id' in post else str(uuid.uuid4())
         midi_file = config['static_dir'] + '/' + id + '.mid'
         wav_file = config['tmp_dir'] + '/' + id + '.wav'
@@ -53,26 +54,19 @@ class New(object):
         old_stdout = sys.stdout
         my_out = MyOut()
         sys.stdout = my_out
-        ct = Celltone(code, 3, output_file = midi_file,
-                      length = length, die_on_error = False, catch_sigint = False)
-        ct.start()
-        # try:
-        #     ct = Celltone(code, 3, output_file = midi_file,
-        #                   length = length, die_on_error = False, catch_sigint = False)
-        #     ct.start()
-        # except Exception, e:
-        #     return json.dumps({'celltone_error': str(e)})
-        # finally:
-        #     sys.stdout = old_stdout
-
-        sys.stdout = old_stdout
+        try:
+            ct = Celltone(code, 3, output_file = midi_file,
+                          length = length, die_on_error = False, catch_sigint = False)
+            ct.start()
+        except Exception, e:
+            return json.dumps({'celltone_error': str(e)})
+        finally:
+            sys.stdout = old_stdout
 
         debug = {}
         success = False
         debug['celltone'] = my_out.out
         
-        print midi_file
-
         if os.path.exists(midi_file):
             debug['timidity'] = subprocess.check_output(
                 ['timidity', '-Ow', '-o' + wav_file, midi_file], shell = False,
