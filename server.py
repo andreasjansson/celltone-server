@@ -4,7 +4,6 @@ import model
 from config import config
 import sys
 from celltone.main import Celltone
-import uuid
 import subprocess
 import os
 import os.path
@@ -42,10 +41,12 @@ class New(object):
         if 'code' not in post:
             raise web.BadRequest()
         code = post['code']
-        length = post['length'] if 'length' in post else 60
+        length = int(post['length']) if 'length' in post else 60
         if length > 60:
             length = 60
-        id = post['id'] if 'id' in post else str(uuid.uuid4())
+        if length < 1:
+            length = 1;
+        id = post['id'] if 'id' in post else model.new_id()
         midi_file = config['static_dir'] + '/' + id + '.mid'
         wav_file = config['tmp_dir'] + '/' + id + '.wav'
         mp3_file = config['static_dir'] + '/' + id + '.mp3'
@@ -54,7 +55,7 @@ class New(object):
             def __init__(self):
                 self.out = ''
             def write(self, text):
-                self.out += text + '\n'
+                self.out += text
         old_stdout = sys.stdout
         my_out = MyOut()
         sys.stdout = my_out

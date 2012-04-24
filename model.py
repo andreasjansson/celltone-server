@@ -1,5 +1,7 @@
 import web
 from config import config
+import random
+import string
 
 db = web.database(dbn = config['dbn'], user = config['db_user'],
                   pw = config['db_pass'], db = config['db_name'])
@@ -17,6 +19,15 @@ def get_program(id):
 def insert_program(id, code):
     db.query('REPLACE INTO programs (id, code) VALUES ($id, $code)',
              vars = locals())
+
+def new_id(length = 6):
+    found_id = False
+    id = None
+    while not found_id:
+        id = ''.join(random.choice(string.ascii_lowercase) for x in range(length))
+        x = db.select('programs', what = 'id', where = 'id = $id', vars = locals())
+        found_id = len(x) == 0
+    return id
 
 class Program:
     def __init__(self, storage):
